@@ -15,7 +15,7 @@ class GameWindow : public D2Window
         sf::Texture texture;
         sf::Sprite sprite[20];
 
-        int sgrid[12][12];
+        int grid[6][6];
 
         int load();
         int run();
