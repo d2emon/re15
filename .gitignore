@@ -27,3 +27,7 @@
 *.exe
 *.out
 *.app
+
+re15.cbp
+*.cbp
+*.depend
