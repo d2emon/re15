@@ -66,6 +66,17 @@ int GameWindow::run()
                     int n = grid[x][y];
                     grid[x][y] = 16;
                     grid[x+dx][y+dy] = n;
+
+                    sprite[16].move(-dx*spriteWidth, -dy*spriteWidth);
+                    float speed = 3;
+
+                    for (int i=0; i < spriteWidth; i += speed)
+                    {
+                        sprite[n].move(speed*dx, speed*dy);
+                        window.draw(sprite[16]);
+                        window.draw(sprite[n]);
+                        window.display();
+                    }
                 }
             }
         }
