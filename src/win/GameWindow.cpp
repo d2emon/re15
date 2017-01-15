@@ -5,6 +5,7 @@
 GameWindow::GameWindow(sf::RenderWindow &window): D2Window(window)
 {
     srand(time(0));
+    window.setFramerateLimit(60);
 }
 
 GameWindow::~GameWindow()
@@ -14,35 +15,17 @@ GameWindow::~GameWindow()
 
 int GameWindow::load()
 {
-    if (!texture.loadFromFile("res/tiles.jpg"))
+    if (!texture.loadFromFile("res/15.png"))
         return EXIT_FAILURE;
-    sprite.setTexture(texture);
 
-    for(int i=1; i <= 10; i++)
-        for(int j=1; j <= 10; j++)
+    int n=0;
+    for(int i=0; i < 4; i++)
+        for(int j=0; j < 4; j++)
         {
-            sgrid[i][j] = 10;
-            if (rand() % 5 == 0)
-                grid[i][j] = 9;
-            else
-                grid[i][j] = 0;
-        }
-
-    for(int i=1; i <= 10; i++)
-        for(int j=1; j <= 10; j++)
-        {
-            int n=0;
-            if (grid[i  ][j  ] == 9) continue;
-            if (grid[i+1][j  ] == 9) n++;
-            if (grid[i  ][j+1] == 9) n++;
-            if (grid[i-1][j  ] == 9) n++;
-            if (grid[i  ][j-1] == 9) n++;
-            if (grid[i+1][j+1] == 9) n++;
-            if (grid[i-1][j-1] == 9) n++;
-            if (grid[i-1][j+1] == 9) n++;
-            if (grid[i+1][j-1] == 9) n++;
-
-            grid[i][j] = n;
+            n++;
+            sprite[n].setTexture(texture);
+            sprite[n].setTextureRect(sf::IntRect(i*spriteWidth, j*spriteWidth, spriteWidth, spriteWidth));
+            grid[i+1][j+1] = n;
         }
 
     return 1;
@@ -66,18 +49,23 @@ int GameWindow::run()
 
             if (event.type == sf::Event::MouseButtonPressed)
             {
-                sf::Vector2i pos = sf::Mouse::getPosition(window);
-                int x = pos.x / spriteWidth;
-                int y = pos.y / spriteWidth;
-
-                printf("%d, %d :: %d, %d\n", pos.x, pos.y, x, y);
                 if (event.key.code == sf::Mouse::Left)
                 {
-                    sgrid[x][y] = grid[x][y];
-                }
-                else if (event.key.code == sf::Mouse::Right)
-                {
-                    sgrid[x][y] = 11;
+                    sf::Vector2i pos = sf::Mouse::getPosition(window);
+                    int x = pos.x / spriteWidth + 1;
+                    int y = pos.y / spriteWidth + 1;
+
+                    int dx=0;
+                    int dy=0;
+
+                    if (grid[x+1][y] == 16){dx =  1; dy =  0;}
+                    if (grid[x][y+1] == 16){dx =  0; dy =  1;}
+                    if (grid[x][y-1] == 16){dx =  0; dy = -1;}
+                    if (grid[x-1][y] == 16){dx = -1; dy =  0;}
+
+                    int n = grid[x][y];
+                    grid[x][y] = 16;
+                    grid[x+dx][y+dy] = n;
                 }
             }
         }
@@ -93,14 +81,12 @@ void GameWindow::show()
     window.clear();
     window.draw(bg);
 
-    for(int i=1; i <= 10; i++)
-        for(int j=1; j <= 10; j++)
+    for(int i=0; i < 4; i++)
+        for(int j=0; j < 4; j++)
         {
-            if(sgrid[i][j] == 9)
-                sgrid[i][j] = grid[i][j];
-            sprite.setTextureRect(sf::IntRect(sgrid[i][j]*spriteWidth, 0, spriteWidth, spriteWidth));
-            sprite.setPosition(i*spriteWidth, j*spriteWidth);
-            window.draw(sprite);
+            int n = grid[i+1][j+1];
+            sprite[n].setPosition(i*spriteWidth, j*spriteWidth);
+            window.draw(sprite[n]);
         }
 
     // Draw the sprite
